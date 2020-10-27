@@ -26,6 +26,7 @@ In order to launch the stack, it is assumed that the following prerequisites are
 The following parameters, defined in `parameters.json`, are used by the CloudFormation template `cfn-template.yaml` to configure the stack deployment.
 
 * EC2 Instance configuration
+
 |**Name**                      |**Description**                                                               |
 |------------------------------|------------------------------------------------------------------------------|
 |`InstanceType`                | Type of the instance to create, eg. t2.micro                                 |
@@ -38,6 +39,7 @@ The following parameters, defined in `parameters.json`, are used by the CloudFor
 |`S3FilePathEC2ScriptToRun`    | S3 Path for ec2 script, default files/ec2_run_script.sh                      |
 
 * Python project environment configuration
+
 |**Name**                      |**Description**                                                               |
 |------------------------------|------------------------------------------------------------------------------|
 |`CondaVersion`                | Version of the Miniconda distribution to install, default 4.8.3              |
@@ -47,7 +49,8 @@ The following parameters, defined in `parameters.json`, are used by the CloudFor
 |`BranchName`                  | Name of the branch to git checkout to                                        |
 |`GithubSSHKeySSMParamName`    | Name of the AWS SSM Parameter which stores the Github SSH private key        |
 
-The following environment variables can be set before running the scripts, and default values are specified within scripts.
+The following environment variables can be set before running the scripts, and default values are specified within scripts
+
 |**Name**                      |**Description**                                                               |
 |------------------------------|------------------------------------------------------------------------------|
 |`STACK_NAME`                  | Name of the stack to create                                                  |
