@@ -1,5 +1,3 @@
-pre-requisite:
-
 ## Objective
 
 This repository consists of a CloudFormation template and helper scripts.
