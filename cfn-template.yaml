@@ -10,14 +10,14 @@ Metadata:
           - CondaVersion
           - PythonVersion
           - PoetryVersion
-          - GithubSSHKeySSMParamName
+          - GithubSSHKey
           - RepositoryName
           - BranchName
       - Label:
           default: "Amazon EC2 Configuration"
         Parameters:
           - InstanceType
-          - AMI
+          - LatestLinuxAmiId
           - KeyName
           - VolumeSize
           - S3BucketName
@@ -29,71 +29,80 @@ Parameters:
     AllowedValues:
       - "/home/ec2-user/"
       - "/home/ubuntu"
+
   CondaVersion:
     Description: Conda Version
     Type: String
     AllowedValues:
       - "4.8.3"
+
   PythonVersion:
     Description: Python Version
     Type: String
     AllowedValues:
       - "3.7"
       - "3.8"
+
   PoetryVersion:
     Description: Poetry Version
     Type: String
     AllowedValues:
       - "0.12.17"
       - "1.0.10"
-  GithubSSHKeySSMParamName:
-    Description: Parameter Name for the Github SSH Key, stored in AWS Parameter Store
-    Type: String
-    AllowedValues:
-      - github_ssh_private_key
+
+  GithubSSHKey:
+    Description: Parameter Name for the Github SSH key, stored in AWS Parameter Store
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: /EC2/GITHUB_SSH_KEY
+
   RepositoryName:
     Description: Name of the repository containing scripts to run
     Type: String
     AllowedValues:
       - portfolio
       - fastapi-test
+
   BranchName:
     Description: Repository branch
     Type: String
     AllowedValues:
       - master
+
   InstanceType:
     Description: EC2 instance type (has default, AllowedValues)
     Type: String
     AllowedValues:
       - t2.micro
       - t2.xlarge
-  AMI:
-    Description: Available AMIs
-    Type: AWS::EC2::Image::Id
-    AllowedValues:
-      - ami-0a669382ea0feb73a
-      - ami-03087df754c198a16
-    ConstraintDescription: must be a valid EC2 instance type.
+
+  LatestLinuxAmiId:
+    Description: Latest AMI for amazon linux 2
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instances
     Type: AWS::EC2::KeyPair::KeyName
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
   VolumeSize:
     Description: Volume size mounted to EC2
     Type: Number
     MinValue: 10
     MaxValue: 200
+
   S3BucketName:
     Description: Name of S3 Bucket containing files to download
     Type: String
     AllowedValues:
       - "cf-templates-10gg34q658sj6-eu-west-2"
+
   S3FilePathCloudWatchConfig:
     Description: S3 file path for the CloudWatch config file
     Type: String
     AllowedValues:
       - "files/cloud_watch_config.json"
+
   S3FilePathEC2ScriptToRun:
     Description: S3 file path for the bash script to run on EC2
     Type: String
@@ -101,6 +110,7 @@ Parameters:
       - "files/ec2_run_script.sh"
 
 Resources:
+
   RootRole:
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
     Type: AWS::IAM::Role
@@ -187,7 +197,7 @@ Resources:
     Properties:
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
-      ImageId: !Ref AMI
+      ImageId: !Ref LatestLinuxAmiId
       IamInstanceProfile: !Ref RootInstanceProfile
       SecurityGroupIds:
         - !Ref SSHSecurityGroup
@@ -221,9 +231,10 @@ Resources:
 
               # Download
               yum update -y
+              # Get the latest CloudFormation package
               yum update -y aws-cfn-bootstrap
 
-              # Run cfn-init
+              # Start cfn-init
               /opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource MyEC2Instance --configsets InstallAndRun --region ${AWS::Region} || cfn_fail "[ERROR] Oops something went wrong with cfn-init!";
 
               # Export environment variables used in ec2_run_script.sh
@@ -310,8 +321,9 @@ Resources:
               git: []
           files:
             "/root/.ssh/id_rsa":
-              content: !Sub |
-                {{resolve:ssm:${GithubSSHKeySSMParamName}:1}}
+              content:
+                !Sub |
+                  ${GithubSSHKey}
               mode: "000400"
               owner: "root"
               group: "root"

@@ -1,0 +1,6 @@
+name: cfn-env
+channels:
+  - defaults
+dependencies:
+  - python==3.9.0               # PSF
+  - pip>=20.2.4                 # MIT
