@@ -71,7 +71,10 @@ A `Makefile` is available to easily create and delete a stack.
 
 ## Personal Notes
 
-Things to keep in mind for further template development:
+/!\ TO DO:
+* Look at CW events with CloudFormation as a source - for eg. to send a slack notification via Lamdbda, on cfn deployment complete / etc.
+
+Other things to keep in mind for further template development:
 * Use CF intrinsic functions etc: !GetAtt, FindInMap, ImportValue, Join, Sub, Conditions
 * Use Nested Stacks (only update/delete the parent template - child templates must be on S3?)
 * or Cross Stack (multiple templates too) with Export/Import values to link templates. eg. network_cfn.yml to create VPC/etc and export VPC/Subnet IDs - look at the Outputs tab in the console
