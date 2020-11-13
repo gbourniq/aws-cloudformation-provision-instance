@@ -72,7 +72,9 @@ A `Makefile` is available to easily create and delete a stack.
 ## Personal Notes
 
 /!\ TO DO:
-* Look at CW events with CloudFormation as a source - for eg. to send a slack notification via Lamdbda, on cfn deployment complete / etc.
+* Look at CW events with CloudFormation as a source - for eg. to send a slack notification via Lambda, on cfn deployment complete / etc.
+* Use SSM Documents (Run commands) to install docker, and other software?
+* Implement this cfn template with a branded aws service catalog
 
 Other things to keep in mind for further template development:
 * Use CF intrinsic functions etc: !GetAtt, FindInMap, ImportValue, Join, Sub, Conditions
